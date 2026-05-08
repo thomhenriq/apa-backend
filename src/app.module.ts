@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProjectsModule } from './projects/projects.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot(({
@@ -7,6 +8,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     database: "apadb.sql",
     autoLoadEntities: true,
     synchronize: true
-  }))],
+  })), ProjectsModule],
 })
 export class AppModule {}
