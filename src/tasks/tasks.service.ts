@@ -28,4 +28,14 @@ export class TasksService {
 
     return task;
   }
+
+  async findAllByProjectId(projectId: string): Promise<Task[]> {
+    const tasks = await this.tasksRepository.find({
+      where: {
+        project: { id: projectId },
+      }
+    });
+
+    return tasks;
+  }
 }

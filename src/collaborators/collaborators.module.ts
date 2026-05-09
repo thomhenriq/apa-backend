@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { CollaboratorsService } from './collaborators.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Collaborator } from './entities/collaborator.entity';
 import { MembersModule } from '../members/members.module';
+import { CollaboratorsService } from './collaborators.service';
+import { Collaborator } from './entities/collaborator.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Collaborator]), MembersModule],

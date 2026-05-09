@@ -11,6 +11,7 @@ import { CollaboratorInviteResult } from '../collaborators/interfaces/collaborat
 import { CreateTaskDto } from '../tasks/dtos/create-task.dto';
 import { TasksService } from '../tasks/tasks.service';
 import { Task } from '../tasks/entities/task.entity';
+import { Collaborator } from '../collaborators/entities/collaborator.entity';
 
 @Injectable()
 export class ProjectsService {
@@ -20,7 +21,7 @@ export class ProjectsService {
     @InjectRepository(Project) private projectsRepository: Repository<Project>,
     private collaboratorsService: CollaboratorsService,
     private tasksService: TasksService,
-  ) {}
+  ) { }
 
   async create(createProjectDto: CreateProjectDto): Promise<Project> {
     const slug = `${nanoid(this.slugIdSize)}-${slugify(createProjectDto.name)}`;
@@ -76,5 +77,25 @@ export class ProjectsService {
     }
 
     return this.tasksService.create(project, createTaskDto);
+  }
+
+  async findCollaborators(projectId: string): Promise<Collaborator[]> {
+    const project = await this.findById(projectId);
+
+    if (!project) {
+      throw new NotFoundException('O projeto não existe');
+    }
+
+    return this.collaboratorsService.findAllByProjectIdWithMember(project.id)
+  }
+
+  async findTasks(projectId: string): Promise<Task[]> {
+    const project = await this.findById(projectId);
+
+    if (!project) {
+      throw new NotFoundException('O projeto não existe');
+    }
+
+    return this.tasksService.findAllByProjectId(project.id)
   }
 }

@@ -15,6 +15,21 @@ export class CollaboratorsService {
     private membersService: MembersService,
   ) {}
 
+  async findAllByProjectIdWithMember(
+    projectId: string,
+  ): Promise<Collaborator[]> {
+    const collaborators = await this.collaboratorsRepository.find({
+      where: {
+        project: { id: projectId },
+      },
+      relations: {
+        member: true
+      }
+    });
+
+    return collaborators;
+  }
+
   async findAllByProjectIdWithMemberInbox(
     projectId: string,
   ): Promise<Collaborator[]> {

@@ -44,8 +44,18 @@ export class ProjectsController {
     return this.projectsService.addCollaborators(projectId, body);
   }
 
+  @Get(':id/collaborators')
+  async findCollaborators(@Param('id') projectId: string) {
+    return this.projectsService.findCollaborators(projectId);
+  }
+
   @Post(':id/tasks')
   async addTask(@Body() body: CreateTaskDto, @Param('id') projectId: string) {
     return this.projectsService.addTask(projectId, body);
+  }
+
+  @Get(':id/tasks')
+  async findTasks(@Param('id') projectId: string) {
+    return this.projectsService.findTasks(projectId);
   }
 }
