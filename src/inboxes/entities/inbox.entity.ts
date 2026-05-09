@@ -1,5 +1,6 @@
 import { Member } from 'src/members/entities/member.entity';
-import { Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Message } from './message.entity';
 
 @Entity('inboxes')
 export class Inbox {
@@ -9,4 +10,7 @@ export class Inbox {
   @OneToOne(() => Member, (member) => member.inbox)
   @JoinColumn()
   member: Member;
+
+  @OneToMany(() => Message, (message) => message.inbox)
+  messages: Message[];
 }

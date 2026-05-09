@@ -13,7 +13,23 @@ export class CollaboratorsService {
     @InjectRepository(Collaborator)
     private collaboratorsRepository: Repository<Collaborator>,
     private membersService: MembersService,
-  ) {}
+  ) { }
+
+  async findAllByProjectIdWithMemberInbox(projectId: string): Promise<Collaborator[]> {
+    const collaborators =
+      await this.collaboratorsRepository.find({
+        where: {
+          project: { id: projectId },
+        },
+        relations: {
+          member: {
+            inbox: true
+          }
+        }
+      });
+
+    return collaborators
+  }
 
   async addToProject(
     project: Project,
