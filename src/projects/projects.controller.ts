@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AddCollaboratorsDto } from '../collaborators/dtos/add-collaborators.dto';
 import { CreateProjectDto } from './dtos/create-project.dto';
 import { ProjectsService } from './projects.service';
+import { CreateTaskDto } from '../tasks/dtos/create-task.dto';
 
 @Controller('projects')
 export class ProjectsController {
@@ -41,5 +42,10 @@ export class ProjectsController {
     @Param('id') projectId: string,
   ) {
     return this.projectsService.addCollaborators(projectId, body);
+  }
+
+  @Post(":id/tasks")
+  async addTask(@Body() body: CreateTaskDto, @Param("id") projectId: string) {
+    return this.projectsService.addTask(projectId, body)
   }
 }

@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Collaborator } from '../../collaborators/entities/collaborator.entity';
+import { Task } from '../../tasks/entities/task.entity';
 
 @Entity('projects')
 export class Project {
@@ -32,4 +33,7 @@ export class Project {
 
   @OneToMany(() => Collaborator, (collaborator) => collaborator.project)
   collaborators: Collaborator[];
+
+  @OneToMany(() => Task, (task) => task.project)
+  tasks: Task[]
 }
