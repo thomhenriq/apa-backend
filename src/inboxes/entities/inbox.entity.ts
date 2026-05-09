@@ -1,5 +1,11 @@
 import { Member } from 'src/members/entities/member.entity';
-import { Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Message } from './message.entity';
 
 @Entity('inboxes')

@@ -19,7 +19,7 @@ export class ProjectsService {
   constructor(
     @InjectRepository(Project) private projectsRepository: Repository<Project>,
     private collaboratorsService: CollaboratorsService,
-    private tasksService: TasksService
+    private tasksService: TasksService,
   ) {}
 
   async create(createProjectDto: CreateProjectDto): Promise<Project> {

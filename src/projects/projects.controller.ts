@@ -44,8 +44,8 @@ export class ProjectsController {
     return this.projectsService.addCollaborators(projectId, body);
   }
 
-  @Post(":id/tasks")
-  async addTask(@Body() body: CreateTaskDto, @Param("id") projectId: string) {
-    return this.projectsService.addTask(projectId, body)
+  @Post(':id/tasks')
+  async addTask(@Body() body: CreateTaskDto, @Param('id') projectId: string) {
+    return this.projectsService.addTask(projectId, body);
   }
 }

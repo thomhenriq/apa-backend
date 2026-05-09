@@ -26,15 +26,17 @@ export class InboxesService {
 
   @OnEvent('task.created')
   async handleTaskCreatedEvent(event: TaskCreatedEvent): Promise<void> {
-    const collaborators = await this.collaboratorsService.findAllByProjectIdWithMemberInbox(event.task.project.id) 
-
-    const messages = collaborators
-      .map((c) =>
-        this.messagesRepository.create({
-          content: `Nova tarefa criada: ${event.task.name}`,
-          inbox: c.member.inbox,
-        }),
+    const collaborators =
+      await this.collaboratorsService.findAllByProjectIdWithMemberInbox(
+        event.task.project.id,
       );
+
+    const messages = collaborators.map((c) =>
+      this.messagesRepository.create({
+        content: `Nova tarefa criada: ${event.task.name}`,
+        inbox: c.member.inbox,
+      }),
+    );
 
     if (messages.length > 0) {
       await this.messagesRepository.save(messages);

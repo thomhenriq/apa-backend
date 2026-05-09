@@ -35,5 +35,5 @@ export class Project {
   collaborators: Collaborator[];
 
   @OneToMany(() => Task, (task) => task.project)
-  tasks: Task[]
+  tasks: Task[];
 }

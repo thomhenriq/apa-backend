@@ -1,29 +1,35 @@
-import { Project } from "src/projects/entities/project.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Project } from 'src/projects/entities/project.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 export enum TaskPriority {
-    HIGH = "high",
-    NORMAL = "normal",
-    LOW = "low"
+  HIGH = 'high',
+  NORMAL = 'normal',
+  LOW = 'low',
 }
 
-@Entity("tasks")
+@Entity('tasks')
 export class Task {
-    @PrimaryGeneratedColumn('uuid')
-    id: string
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column()
-    name: string
+  @Column()
+  name: string;
 
-    @Column()
-    description: string
+  @Column()
+  description: string;
 
-    @Column()
-    priority: string
+  @Column()
+  priority: string;
 
-    @ManyToOne(() => Project, (project) => project.tasks)
-    project: Project
+  @ManyToOne(() => Project, (project) => project.tasks)
+  project: Project;
 
-    @CreateDateColumn()
-    createdAt: Date
+  @CreateDateColumn()
+  createdAt: Date;
 }

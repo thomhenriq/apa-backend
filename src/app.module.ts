@@ -23,4 +23,4 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     TasksModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

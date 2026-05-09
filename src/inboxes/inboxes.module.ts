@@ -6,7 +6,10 @@ import { InboxesService } from './inboxes.service';
 import { CollaboratorsModule } from '../collaborators/collaborators.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Inbox, Message]), forwardRef(() => CollaboratorsModule)],
+  imports: [
+    TypeOrmModule.forFeature([Inbox, Message]),
+    forwardRef(() => CollaboratorsModule),
+  ],
   providers: [InboxesService],
   exports: [InboxesService],
 })

@@ -7,7 +7,11 @@ import { CollaboratorsModule } from '../collaborators/collaborators.module';
 import { TasksModule } from '../tasks/tasks.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Project]), CollaboratorsModule, TasksModule],
+  imports: [
+    TypeOrmModule.forFeature([Project]),
+    CollaboratorsModule,
+    TasksModule,
+  ],
   providers: [ProjectsService],
   controllers: [ProjectsController],
 })
