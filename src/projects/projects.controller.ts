@@ -1,36 +1,45 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ProjectsService } from './projects.service';
+import { AddCollaboratorsDto } from '../collaborators/dtos/add-collaborators.dto';
 import { CreateProjectDto } from './dtos/create-project.dto';
+import { ProjectsService } from './projects.service';
 
 @Controller('projects')
 export class ProjectsController {
-    constructor(private projectsService: ProjectsService) {}
+  constructor(private projectsService: ProjectsService) {}
 
-    @Post()
-    async create(@Body() body: CreateProjectDto) {
-        const project = await this.projectsService.create(body)
+  @Post()
+  async create(@Body() body: CreateProjectDto) {
+    const project = await this.projectsService.create(body);
 
-        return project
-    }
+    return project;
+  }
 
-    @Get()
-    async findMany() {
-        const projects = await this.projectsService.findMany()
+  @Get()
+  async findMany() {
+    const projects = await this.projectsService.findMany();
 
-        return projects
-    }
+    return projects;
+  }
 
-    @Get(":id")
-    async findById(@Param('id') id: string) {
-        const project = await this.projectsService.findById(id)
+  @Get(':id')
+  async findById(@Param('id') id: string) {
+    const project = await this.projectsService.findById(id);
 
-        return project
-    }
+    return project;
+  }
 
-    @Get(":slug")
-    async findBySlug(@Param('slug') slug: string) {
-        const project = await this.projectsService.findBySlug(slug)
+  @Get(':slug')
+  async findBySlug(@Param('slug') slug: string) {
+    const project = await this.projectsService.findBySlug(slug);
 
-        return project
-    }
+    return project;
+  }
+
+  @Post(':id/collaborators')
+  async addCollaborators(
+    @Body() body: AddCollaboratorsDto,
+    @Param('id') projectId: string,
+  ) {
+    return this.projectsService.addCollaborators(projectId, body);
+  }
 }

@@ -8,6 +8,7 @@ import { InboxesModule } from 'src/inboxes/inboxes.module';
 @Module({
   imports: [TypeOrmModule.forFeature([Member]), InboxesModule],
   providers: [MembersService],
-  controllers: [MembersController]
+  controllers: [MembersController],
+  exports: [MembersService],
 })
 export class MembersModule {}

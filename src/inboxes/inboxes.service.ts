@@ -6,13 +6,15 @@ import { Member } from '../members/entities/member.entity';
 
 @Injectable()
 export class InboxesService {
-    constructor(@InjectRepository(Inbox) private inboxesRepository: Repository<Inbox>) {}
+  constructor(
+    @InjectRepository(Inbox) private inboxesRepository: Repository<Inbox>,
+  ) {}
 
-    async create(member: Member): Promise<Inbox> {
-        const inbox = this.inboxesRepository.create({
-            member
-        })
+  async create(member: Member): Promise<Inbox> {
+    const inbox = this.inboxesRepository.create({
+      member,
+    });
 
-        return await this.inboxesRepository.save(inbox)
-    }
+    return await this.inboxesRepository.save(inbox);
+  }
 }

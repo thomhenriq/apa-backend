@@ -1,3 +1,3 @@
 export function slugify(text: string): string {
-    return text.toLocaleLowerCase().trim().replace(" ", "-")
+  return text.toLocaleLowerCase().trim().replace(' ', '-');
 }

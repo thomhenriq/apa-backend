@@ -1,24 +1,35 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Collaborator } from '../../collaborators/entities/collaborator.entity';
 
-@Entity("projects")
+@Entity('projects')
 export class Project {
-    @PrimaryGeneratedColumn('uuid')
-    id: string
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column()
-    name: string
+  @Column()
+  name: string;
 
-    @Column({
-        unique: true
-    })
-    slug: string
+  @Column({
+    unique: true,
+  })
+  slug: string;
 
-    @Column()
-    description: string
+  @Column()
+  description: string;
 
-    @CreateDateColumn()
-    createdAt: Date
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @UpdateDateColumn()
-    updatedAt: Date
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @OneToMany(() => Collaborator, (collaborator) => collaborator.project)
+  collaborators: Collaborator[];
 }

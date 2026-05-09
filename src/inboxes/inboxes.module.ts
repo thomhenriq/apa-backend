@@ -6,6 +6,6 @@ import { Inbox } from './entities/inbox.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Inbox])],
   providers: [InboxesService],
-  exports: [InboxesService]
+  exports: [InboxesService],
 })
 export class InboxesModule {}
