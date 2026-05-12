@@ -1,98 +1,256 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  <a href="https://www.atriajr.com.br/" target="blank"><img src="https://www.atriajr.com.br/wp-content/uploads/2020/08/atria_simbolo_branco_CMYK-3-1024x970.png" width="120" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+<h1 align="center">APA — Atria Project Assignor</h1>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+<p align="center">
+  Sistema de atribuição e gerenciamento de projetos para membros da <strong>Atria Jr.</strong>, construído com <a href="https://nestjs.com" target="_blank">NestJS</a> e TypeScript.
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Sobre o projeto
 
-## Project setup
+O **APA (Atria Project Assignor/Atribuidor de Projetos da Atria)** é o backend responsável por organizar a distribuição de projetos entre os membros da empresa júnior Atria Jr. Ele permite cadastrar membros, criar projetos, adicionar colaboradores a esses projetos, criar tarefas e notificar automaticamente os colaboradores via caixa de entrada (inbox) sempre que uma nova tarefa é criada.
 
-```bash
-$ npm install
+---
+
+## Funcionalidades
+
+- **Cadastro de membros** com cargo (assessorx, coordenadorx, diretorx) e criação automática de inbox
+- **Criação de projetos** com slug único gerado automaticamente
+- **Atribuição de colaboradores** a projetos por e-mail
+- **Criação de tarefas** com prioridade (alta, normal, baixa) vinculadas a projetos
+- **Notificações automáticas** via inbox para todos os colaboradores do projeto ao criar uma tarefa
+
+---
+
+## Arquitetura
+
+O sistema é dividido em cinco módulos principais:
+
+```mermaid
+graph TD
+  A[MembersModule] -->|cria inbox| B[InboxesModule]
+  C[ProjectsModule] -->|gerencia| D[CollaboratorsModule]
+  C -->|gerencia| E[TasksModule]
+  D -->|usa| A
+  E -->|emite evento task.created| B
+  B -->|usa| D
 ```
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+## Modelo de dados
 
-# watch mode
-$ npm run start:dev
+```mermaid
+erDiagram
+  MEMBER {
+    uuid id PK
+    string name
+    string email
+    string role
+  }
+  INBOX {
+    uuid id PK
+  }
+  MESSAGE {
+    uuid id PK
+    string content
+    boolean read
+    datetime createdAt
+  }
+  PROJECT {
+    uuid id PK
+    string name
+    string slug
+    string description
+    datetime createdAt
+    datetime updatedAt
+  }
+  COLLABORATOR {
+    uuid id PK
+    datetime createdAt
+  }
+  TASK {
+    uuid id PK
+    string name
+    string description
+    string priority
+    datetime createdAt
+  }
 
-# production mode
-$ npm run start:prod
+  MEMBER ||--|| INBOX : "possui"
+  INBOX ||--o{ MESSAGE : "contém"
+  PROJECT ||--o{ COLLABORATOR : "tem"
+  PROJECT ||--o{ TASK : "tem"
+  MEMBER ||--o{ COLLABORATOR : "participa como"
 ```
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ npm run test
+## Fluxo principal
 
-# e2e tests
-$ npm run test:e2e
+### Cadastro de membro e criação de inbox
 
-# test coverage
-$ npm run test:cov
+```mermaid
+sequenceDiagram
+  actor Cliente
+  participant MembersController
+  participant MembersService
+  participant InboxesService
+
+  Cliente->>MembersController: POST /members
+  MembersController->>MembersService: register(dto)
+  MembersService->>MembersService: verifica e-mail duplicado
+  MembersService->>MembersService: cria Member (transação)
+  MembersService->>InboxesService: create(member)
+  InboxesService-->>MembersService: Inbox criada
+  MembersService-->>MembersController: Member
+  MembersController-->>Cliente: 201 Member
 ```
 
-## Deployment
+### Criação de tarefa e notificação de colaboradores
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+```mermaid
+sequenceDiagram
+  actor Cliente
+  participant ProjectsController
+  participant ProjectsService
+  participant TasksService
+  participant EventEmitter
+  participant InboxesService
+  participant CollaboratorsService
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+  Cliente->>ProjectsController: POST /projects/:id/tasks
+  ProjectsController->>ProjectsService: addTask(projectId, dto)
+  ProjectsService->>TasksService: create(project, dto)
+  TasksService->>TasksService: salva Task no banco
+  TasksService->>EventEmitter: emit('task.created', TaskCreatedEvent)
+  EventEmitter->>InboxesService: handleTaskCreatedEvent(event)
+  InboxesService->>CollaboratorsService: findAllByProjectIdWithMemberInbox(projectId)
+  CollaboratorsService-->>InboxesService: lista de colaboradores
+  InboxesService->>InboxesService: cria Message para cada colaborador
+  InboxesService-->>EventEmitter: mensagens salvas
+  TasksService-->>ProjectsService: Task
+  ProjectsService-->>ProjectsController: Task
+  ProjectsController-->>Cliente: 201 Task
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Adição de colaboradores a um projeto
 
-## Resources
+```mermaid
+sequenceDiagram
+  actor Cliente
+  participant ProjectsController
+  participant ProjectsService
+  participant CollaboratorsService
+  participant MembersService
 
-Check out a few resources that may come in handy when working with NestJS:
+  Cliente->>ProjectsController: POST /projects/:id/collaborators
+  ProjectsController->>ProjectsService: addCollaborators(projectId, dto)
+  ProjectsService->>CollaboratorsService: addToProject(project, dto)
+  loop Para cada e-mail
+    CollaboratorsService->>MembersService: findByEmail(email)
+    alt Membro encontrado
+      CollaboratorsService->>CollaboratorsService: verifica duplicidade
+      CollaboratorsService->>CollaboratorsService: salva Collaborator
+    else Membro não encontrado
+      CollaboratorsService-->>CollaboratorsService: registra falha
+    end
+  end
+  CollaboratorsService-->>ProjectsService: CollaboratorInviteResult[]
+  ProjectsService-->>ProjectsController: resultados
+  ProjectsController-->>Cliente: 200 resultados
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## Endpoints da API
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Membros
 
-## Stay in touch
+| Método | Rota       | Descrição              |
+|--------|------------|------------------------|
+| POST   | `/members` | Cadastra um novo membro |
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Projetos
 
-## License
+| Método | Rota                          | Descrição                              |
+|--------|-------------------------------|----------------------------------------|
+| POST   | `/projects`                   | Cria um novo projeto                   |
+| GET    | `/projects`                   | Lista todos os projetos                |
+| GET    | `/projects/:id`               | Busca projeto por ID                   |
+| POST   | `/projects/:id/collaborators` | Adiciona colaboradores ao projeto      |
+| GET    | `/projects/:id/collaborators` | Lista colaboradores do projeto         |
+| POST   | `/projects/:id/tasks`         | Cria uma tarefa no projeto             |
+| GET    | `/projects/:id/tasks`         | Lista tarefas do projeto               |
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+---
+
+## Cargos disponíveis
+
+| Valor          | Descrição     |
+|----------------|---------------|
+| `assessorx`    | Assessorx     |
+| `coordenadorx` | Coordenadorx  |
+| `diretorx`     | Diretorx      |
+
+## Prioridades de tarefa
+
+| Valor    | Descrição |
+|----------|-----------|
+| `high`   | Alta      |
+| `normal` | Normal    |
+| `low`    | Baixa     |
+
+---
+
+## Tecnologias
+
+- [NestJS](https://nestjs.com/) — framework Node.js
+- [TypeORM](https://typeorm.io/) — ORM para banco de dados
+- [SQLite](https://www.sqlite.org/) — banco de dados local
+- [nanoid](https://github.com/ai/nanoid) — geração de IDs únicos para slugs
+- [@nestjs/event-emitter](https://docs.nestjs.com/techniques/events) — sistema de eventos para notificações
+
+---
+
+## Configuração do projeto
+
+```bash
+npm install
+```
+
+## Executar o projeto
+
+```bash
+# desenvolvimento
+npm run start
+
+# modo watch
+npm run start:dev
+
+# produção
+npm run start:prod
+```
+
+## Testes
+
+```bash
+# testes unitários
+npm run test
+
+# testes e2e
+npm run test:e2e
+
+# cobertura
+npm run test:cov
+```
+
+---
+
+## Licença
+
+Este projeto está sob a licença MIT.
